@@ -1,4 +1,4 @@
-﻿using CondenserDotNet.Configuration;
+using CondenserDotNet.Configuration;
 using CondenserTests.Fakes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,12 +21,22 @@ namespace CondenserTests
             await registry.SetKeyAsync("FakeConfig:Setting2", "def");
 
             var builder = new WebHostBuilder()
-                .Configure(x => x.UseMvcWithDefaultRoute())
-                .ConfigureServices(x =>
+                .Configure(app =>
                 {
-                    x.AddMvcCore();
-                    x.AddOptions();
-                    x.ConfigureReloadable<FakeConfig>(registry);
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapControllers();
+                    }
+                    );
+                }
+                 )
+                .ConfigureServices(services =>
+                {
+                    services.AddControllers();
+                    services.AddMvcCore();
+                    services.AddOptions();
+                    services.ConfigureReloadable<FakeConfig>(registry);
                 });
 
             using (var server = new TestServer(builder))

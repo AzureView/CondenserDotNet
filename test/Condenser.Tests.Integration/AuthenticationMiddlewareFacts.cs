@@ -50,7 +50,7 @@ namespace Condenser.Tests.Integration
             public void Configure(IApplicationBuilder app)
             {
                 app.UseMiddleware<WindowsAuthenticationMiddleware>();
-                app.Use(async (context, next) =>
+                app.Run(async (context) =>
                 {
                     await context.Response.WriteAsync(context.User.Identity.Name);
                     return;
